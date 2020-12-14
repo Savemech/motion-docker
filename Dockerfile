@@ -1,6 +1,4 @@
-FROM ubuntu:18.04
-LABEL maintainer="TBD"
-
+FROM ubuntu:20.04
 #Setup parameters
 ARG BUILD_DATE
 ARG VCS_REF
@@ -13,17 +11,20 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-type="Git" \
     org.label-schema.vcs-url="https://github.com/Motion-Project/motion.git"
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
+
+
 # Setup Timezone packages and avoid all interaction. This will be overwritten by the user when selecting TZ in the run command
-RUN export DEBIAN_FRONTEND=noninteractive; \
-    export DEBCONF_NONINTERACTIVE_SEEN=true; \
-    apt-get update -qqy && apt-get install -qqy --option Dpkg::Options::="--force-confnew" --no-install-recommends \
-    autoconf automake build-essential pkgconf libtool libzip-dev libjpeg-dev tzdata \
-    git libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libavdevice-dev \
-    libwebp-dev gettext autopoint libmicrohttpd-dev ca-certificates imagemagick curl wget \
-    libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libavdevice-dev ffmpeg x264 && \
-    apt-get --quiet autoremove --yes && \
-    apt-get --quiet --yes clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN set -ex && \
+apt-get update -qqy && apt-get install -qqy --option Dpkg::Options::="--force-confnew" --no-install-recommends \
+autoconf automake build-essential pkgconf libtool libzip-dev libjpeg-dev tzdata \
+git libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libavdevice-dev \
+libwebp-dev gettext autopoint libmicrohttpd-dev ca-certificates imagemagick curl wget \
+libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libavdevice-dev ffmpeg x264 && \
+apt-get --quiet autoremove --yes && \
+apt-get --quiet --yes clean && \
+rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/Motion-Project/motion.git  && \
    cd motion  && \
